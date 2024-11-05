@@ -110,7 +110,8 @@ router.post("/routine", async (context) => {
       return;
     } else {
       context.response.status = 201;
-      context.response.body = { routineId: data[0].routine_id };
+      const routineId = data[0].routine_id;
+      context.response.body = { routineId: routineId };
 
       return;
     }
@@ -142,19 +143,102 @@ router.get("/routines/:userId", async (context) => {
       return;
     }
 
-    // Fetch all routines for the specified userId
     const { data, error } = await supabase
       .from("routines")
       .select("*")
       .eq("user_id", userId);
 
-    // Handle any errors during query
+    if (error) {
+      context.response.status = 400;
+      context.response.body = { error: error.message };
+
+      return;
+    } else {
+      context.response.status = 200;
+      context.response.body = data;
+
+      return;
+    }
+  } catch (error) {
+    console.error(error);
+
+    context.response.status = 500;
+    context.response.body = { error: "Internal Server Error" };
+  }
+});
+
+router.post("/routines/:routineId/exercises", async (context) => {
+  try {
+    const isValidAuthToken = await validateAuthToken(context);
+
+    if (!isValidAuthToken) {
+      context.response.status = 401;
+      context.response.body = { error: "Invalid or expired token" };
+
+      return;
+    }
+
+    const routineId = context.params.routineId;
+    const { name, muscle } = await context.request.body.json();
+
+    const { data, error } = await supabase.from("exercises").insert({
+      routine_id: routineId,
+      name: name,
+      muscle: muscle,
+    }).select("exercise_id");
+
     if (error) {
       context.response.status = 400;
       context.response.body = { error: error.message };
     } else {
+      context.response.status = 201;
+
+      const exerciseId = data[0].exercise_id;
+      context.response.body = { exerciseId: exerciseId };
+    }
+  } catch (error) {
+    console.error(error);
+
+    context.response.status = 500;
+    context.response.body = { error: "Internal Server Error" };
+  }
+});
+
+router.get("/routines/:routineId/exercises/:userId", async (context) => {
+  try {
+    const isValidAuthToken = await validateAuthToken(context);
+
+    if (!isValidAuthToken) {
+      context.response.status = 401;
+      context.response.body = { error: "Invalid or expired token" };
+
+      return;
+    }
+
+    const { routineId, userId } = context.params;
+
+    const { data, error } = await supabase
+      .from("exercises")
+      .select(`
+      exercise_id,
+      name,
+      muscle,
+      routine_id,
+      routines!inner(user_id)
+    `)
+      .eq("routine_id", routineId)
+      .eq("routines.user_id", userId);
+
+    if (error) {
+      context.response.status = 400;
+      context.response.body = { error: error.message };
+
+      return;
+    } else {
       context.response.status = 200;
-      context.response.body = data; // Respond with the user's routines
+      context.response.body = data;
+
+      return;
     }
   } catch (error) {
     console.error(error);
