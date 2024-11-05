@@ -28,5 +28,6 @@ CREATE TABLE RoutineExercises (
     exercise_id INT,
     repetitions INT NOT NULL,
     weight DECIMAL(5, 2) NOT NULL,
+    weight_measure: VARCHAR(10) NOT NULL,
     FOREIGN KEY (exercise_id) REFERENCES Exercises(exercise_id)
 );

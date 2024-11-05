@@ -204,7 +204,7 @@ router.post("/routines/:routineId/exercises", async (context) => {
   }
 });
 
-router.get("/routines/:routineId/exercises/:userId", async (context) => {
+router.get("/routines/:routineId/exercises", async (context) => {
   try {
     const isValidAuthToken = await validateAuthToken(context);
 
@@ -215,19 +215,16 @@ router.get("/routines/:routineId/exercises/:userId", async (context) => {
       return;
     }
 
-    const { routineId, userId } = context.params;
+    const { routineId } = context.params;
 
     const { data, error } = await supabase
       .from("exercises")
       .select(`
       exercise_id,
       name,
-      muscle,
-      routine_id,
-      routines!inner(user_id)
+      muscle
     `)
-      .eq("routine_id", routineId)
-      .eq("routines.user_id", userId);
+      .eq("routine_id", routineId);
 
     if (error) {
       context.response.status = 400;
@@ -247,6 +244,96 @@ router.get("/routines/:routineId/exercises/:userId", async (context) => {
     context.response.body = { error: "Internal Server Error" };
   }
 });
+
+router.post(
+  "/routines/:routineId/exercises/:exerciseId/routine-exercises",
+  async (context) => {
+    try {
+      const isValidAuthToken = await validateAuthToken(context);
+
+      if (!isValidAuthToken) {
+        context.response.status = 401;
+        context.response.body = { error: "Invalid or expired token" };
+
+        return;
+      }
+
+      const { exerciseId } = context.params;
+      const { repetitions, weight, weightMeasure } = await context.request.body
+        .json();
+
+      const { data, error } = await supabase.from("routineexercises").insert({
+        exercise_id: exerciseId,
+        repetitions: repetitions,
+        weight: weight,
+        weight_measure: weightMeasure,
+      }).select("routine_exercise_id");
+
+      if (error) {
+        context.response.status = 400;
+        context.response.body = { error: error.message };
+
+        return;
+      } else {
+        context.response.status = 201;
+
+        const routineExerciseId = data[0].routine_exercise_id;
+        context.response.body = { routineExerciseId: routineExerciseId };
+
+        return;
+      }
+    } catch (error) {
+      console.error(error);
+
+      context.response.status = 500;
+      context.response.body = { error: "Internal Server Error" };
+    }
+  },
+);
+
+router.get(
+  "/routines/:routineId/exercises/:exerciseId/routine-exercises/:id",
+  async (context) => {
+    try {
+      const isValidAuthToken = await validateAuthToken(context);
+
+      if (!isValidAuthToken) {
+        context.response.status = 401;
+        context.response.body = { error: "Invalid or expired token" };
+
+        return;
+      }
+
+      const { exerciseId, id } = context.params;
+
+      const { data, error } = await supabase.from("routineexercises")
+        .select(`
+          repetitions,
+          weight,
+          weight_measure
+          `)
+        .eq("routine_exercise_id", id)
+        .eq("exercise_id", exerciseId);
+
+      if (error) {
+        context.response.status = 400;
+        context.response.body = { error: error.message };
+
+        return;
+      } else {
+        context.response.status = 200;
+        context.response.body = data;
+
+        return;
+      }
+    } catch (error) {
+      console.error(error);
+
+      context.response.status = 500;
+      context.response.body = { error: "Internal Server Error" };
+    }
+  },
+);
 
 const validateAuthToken = async (context: Context): Promise<boolean> => {
   let isAuthTokenValid = true;
