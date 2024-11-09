@@ -84,14 +84,14 @@ router.post("/login", async (context) => {
 
 router.post("/routine", async (context) => {
   try {
-    const isValidAuthToken = await validateAuthToken(context);
+    // const isValidAuthToken = await validateAuthToken(context);
 
-    if (!isValidAuthToken) {
-      context.response.status = 401;
-      context.response.body = { error: "Invalid or expired token" };
+    // if (!isValidAuthToken) {
+    //   context.response.status = 401;
+    //   context.response.body = { error: "Invalid or expired token" };
 
-      return;
-    }
+    //   return;
+    // }
 
     const { userId, description, isCompleted } = await context.request.body
       .json();
@@ -125,14 +125,14 @@ router.post("/routine", async (context) => {
 
 router.get("/routines/:userId", async (context) => {
   try {
-    const isValidAuthToken = await validateAuthToken(context);
+    // const isValidAuthToken = await validateAuthToken(context);
 
-    if (!isValidAuthToken) {
-      context.response.status = 401;
-      context.response.body = { error: "Invalid or expired token" };
+    // if (!isValidAuthToken) {
+    //   context.response.status = 401;
+    //   context.response.body = { error: "Invalid or expired token" };
 
-      return;
-    }
+    //   return;
+    // }
 
     const userId = context.params.userId;
 
@@ -167,16 +167,109 @@ router.get("/routines/:userId", async (context) => {
   }
 });
 
-router.post("/routines/:routineId/exercises", async (context) => {
+router.delete("/routines/:userId/:id", async (context) => {
   try {
-    const isValidAuthToken = await validateAuthToken(context);
+    // const isValidAuthToken = await validateAuthToken(context);
 
-    if (!isValidAuthToken) {
-      context.response.status = 401;
-      context.response.body = { error: "Invalid or expired token" };
+    // if (!isValidAuthToken) {
+    //   context.response.status = 401;
+    //   context.response.body = { error: "Invalid or expired token" };
+
+    //   return;
+    // }
+
+    const userId = context.params.userId;
+    const routineId = context.params.id;
+
+    const { data: userRoutines, error: errorUserRoutines } = await supabase
+      .from("routines").select("routine_id").eq("user_id", userId);
+
+    if (errorUserRoutines) {
+      context.response.status = 400;
+      context.response.body = { error: errorUserRoutines.message };
+      return;
+    }
+
+    if (userRoutines.length === 0) {
+      context.response.status = 404;
+      context.response.body = { error: "Routine not found" };
 
       return;
     }
+
+    const { data: exercises, error: exercisesError } = await supabase
+      .from("exercises")
+      .select("exercise_id")
+      .eq("routine_id", routineId);
+
+    if (exercisesError) {
+      context.response.status = 400;
+      context.response.body = { error: exercisesError.message };
+      return;
+    }
+
+    if (exercises.length > 0) {
+      const exerciseIds = exercises.map((exercise) => exercise.exercise_id);
+
+      const { error: deleteRoutineExercisesError } = await supabase
+        .from("routineexercises")
+        .delete()
+        .in("exercise_id", exerciseIds);
+
+      if (deleteRoutineExercisesError) {
+        context.response.status = 400;
+        context.response.body = { error: deleteRoutineExercisesError.message };
+        return;
+      }
+
+      const { error: deleteExercisesError } = await supabase
+        .from("exercises")
+        .delete()
+        .eq("routine_id", routineId);
+
+      if (deleteExercisesError) {
+        context.response.status = 400;
+        context.response.body = { error: deleteExercisesError.message };
+        return;
+      }
+    }
+
+    const { data: deletedRoutine, error: deleteRoutineError } = await supabase
+      .from("routines")
+      .delete()
+      .eq("routine_id", routineId)
+      .select("routine_id");
+
+    if (deleteRoutineError) {
+      context.response.status = 400;
+      context.response.body = { error: deleteRoutineError.message };
+      return;
+    }
+
+    if (!deletedRoutine) {
+      context.response.status = 404;
+      context.response.body = { error: "Routine not found" };
+    } else {
+      context.response.status = 200;
+      context.response.body = {
+        id: routineId,
+      };
+    }
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+router.post("/routines/:routineId/exercises", async (context) => {
+  try {
+    // const isValidAuthToken = await validateAuthToken(context);
+
+    // if (!isValidAuthToken) {
+    //   context.response.status = 401;
+    //   context.response.body = { error: "Invalid or expired token" };
+
+    //   return;
+    // }
 
     const routineId = context.params.routineId;
     const { name, muscle } = await context.request.body.json();
@@ -206,14 +299,14 @@ router.post("/routines/:routineId/exercises", async (context) => {
 
 router.get("/routines/:routineId/exercises", async (context) => {
   try {
-    const isValidAuthToken = await validateAuthToken(context);
+    // const isValidAuthToken = await validateAuthToken(context);
 
-    if (!isValidAuthToken) {
-      context.response.status = 401;
-      context.response.body = { error: "Invalid or expired token" };
+    // if (!isValidAuthToken) {
+    //   context.response.status = 401;
+    //   context.response.body = { error: "Invalid or expired token" };
 
-      return;
-    }
+    //   return;
+    // }
 
     const { routineId } = context.params;
 
@@ -249,14 +342,14 @@ router.post(
   "/routines/:routineId/exercises/:exerciseId/routine-exercises",
   async (context) => {
     try {
-      const isValidAuthToken = await validateAuthToken(context);
+      // const isValidAuthToken = await validateAuthToken(context);
 
-      if (!isValidAuthToken) {
-        context.response.status = 401;
-        context.response.body = { error: "Invalid or expired token" };
+      // if (!isValidAuthToken) {
+      //   context.response.status = 401;
+      //   context.response.body = { error: "Invalid or expired token" };
 
-        return;
-      }
+      //   return;
+      // }
 
       const { exerciseId } = context.params;
       const { repetitions, weight, weightMeasure } = await context.request.body
@@ -295,14 +388,14 @@ router.get(
   "/routines/:routineId/exercises/:exerciseId/routine-exercises/:id",
   async (context) => {
     try {
-      const isValidAuthToken = await validateAuthToken(context);
+      // const isValidAuthToken = await validateAuthToken(context);
 
-      if (!isValidAuthToken) {
-        context.response.status = 401;
-        context.response.body = { error: "Invalid or expired token" };
+      // if (!isValidAuthToken) {
+      //   context.response.status = 401;
+      //   context.response.body = { error: "Invalid or expired token" };
 
-        return;
-      }
+      //   return;
+      // }
 
       const { exerciseId, id } = context.params;
 
@@ -334,6 +427,60 @@ router.get(
     }
   },
 );
+
+router.post("/chat/message", async (context) => {
+  try {
+    // const isValidAuthToken = await validateAuthToken(context);
+
+    // if (!isValidAuthToken) {
+    //   context.response.status = 401;
+    //   context.response.body = { error: "Invalid or expired token" };
+
+    //   return;
+    // }
+
+    const { question, userId } = await context.request.body.json();
+
+    const chatResponse = await askGemini(question);
+
+    context.response.status = 200;
+    context.response.body = chatResponse;
+  } catch (error) {
+    console.error(error);
+
+    context.response.status = 500;
+    context.response.body = { error: "Internal Server Error" };
+  }
+});
+
+async function askGemini(question: string): Promise<string> {
+  const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
+  const geminiEndpoint =
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`;
+
+  const response = await fetch(geminiEndpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      contents: [
+        {
+          parts: [
+            {
+              text: question,
+            },
+          ],
+        },
+      ],
+    }),
+  });
+
+  const data = await response.json();
+
+  return data.candidates?.[0]?.content.parts[0].text ||
+    "No response from Gemini";
+}
 
 const validateAuthToken = async (context: Context): Promise<boolean> => {
   let isAuthTokenValid = true;
