@@ -82,7 +82,7 @@ router.post("/login", async (context) => {
   }
 });
 
-router.post("/routine", async (context) => {
+router.post("/routines/:userId", async (context) => {
   try {
     // const isValidAuthToken = await validateAuthToken(context);
 
@@ -93,7 +93,8 @@ router.post("/routine", async (context) => {
     //   return;
     // }
 
-    const { userId, description, isCompleted } = await context.request.body
+    const { userId } = context.params;
+    const { description, isCompleted } = await context.request.body
       .json();
 
     const { data, error } = await supabase.from("routines").insert({
@@ -164,6 +165,47 @@ router.get("/routines/:userId", async (context) => {
 
     context.response.status = 500;
     context.response.body = { error: "Internal Server Error" };
+  }
+});
+
+router.put("/routines/:userId/:routineId", async (context) => {
+  // const isValidAuthToken = await validateAuthToken(context);
+
+  // if (!isValidAuthToken) {
+  //   context.response.status = 401;
+  //   context.response.body = { error: "Invalid or expired token" };
+
+  //   return;
+  // }
+
+  const { routineId, userId } = context.params;
+  const { isCompleted } = await context.request.body.json();
+
+  const { data, error } = await supabase.from("routines")
+    .update({
+      is_completed: isCompleted,
+    })
+    .eq("routine_id", routineId)
+    .eq("user_id", userId)
+    .select("routine_id");
+
+  if (error) {
+    context.response.status = 400;
+    context.response.body = { error: error.message };
+    return;
+  }
+
+  const updatedRoutineId = data[0].routine_id;
+  if (!updatedRoutineId) {
+    context.response.status = 404;
+    context.response.body = { error: "Routine not found" };
+
+    return;
+  } else {
+    context.response.status = 200;
+    context.response.body = { id: updatedRoutineId };
+
+    return;
   }
 });
 
