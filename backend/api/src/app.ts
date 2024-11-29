@@ -1,5 +1,6 @@
 import "jsr:@std/dotenv/load";
 import { Application, Router } from "https://deno.land/x/oak@v17.1.1/mod.ts";
+import cors from "./middleware/CORSMiddleware.ts";
 import authRouter from "./auth/AuthRouter.ts";
 import routinesController from "./routines/RoutinesRouter.ts";
 
@@ -10,6 +11,8 @@ router.get("/hello", (context) => {
 });
 
 const app = new Application();
+app.use(cors);
+
 app.use(router.routes());
 app.use(router.allowedMethods());
 
@@ -19,6 +22,6 @@ app.use(authRouter.allowedMethods());
 app.use(routinesController.routes());
 app.use(routinesController.allowedMethods());
 
-const port = 8000;
+const port = Deno.env.get("PORT") ?? "8000";
 console.log(`Server running on http://localhost:${port}`);
-await app.listen({ port });
+await app.listen({ port: parseInt(port) });
