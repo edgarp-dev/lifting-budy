@@ -92,13 +92,13 @@ const updateRoutine = async ({ params, request, response }: Context) => {
             return;
         }
 
-        const updatedRoutineId = data[0].routine_id;
-        if (!updatedRoutineId) {
+        if (data.length === 0) {
             response.status = 404;
             response.body = { error: "Routine not found" };
 
             return;
         } else {
+            const updatedRoutineId = data[0].routine_id;
             response.status = 200;
             response.body = { id: updatedRoutineId };
 

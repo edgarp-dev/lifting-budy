@@ -1,8 +1,8 @@
 import "jsr:@std/dotenv/load";
 import { Application, Router } from "https://deno.land/x/oak@v17.1.1/mod.ts";
 import cors from "./middleware/CORSMiddleware.ts";
-import authRouter from "./auth/AuthRouter.ts";
 import routinesController from "./routines/RoutinesRouter.ts";
+import authRouter from "./auth/AuthRouter.ts";
 
 const router = new Router();
 
