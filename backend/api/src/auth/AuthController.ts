@@ -70,4 +70,36 @@ const signup = async ({ request, response }: Context) => {
     }
 };
 
-export { login, signup };
+const refreshToken = async ({ request, response }: Context) => {
+    try {
+        const { refreshToken } = await request.body.json();
+
+        if (!refreshToken) {
+            response.status = 401;
+            response.body = { error: "No token provided" };
+
+            return;
+        }
+
+        const supabase = SupabaseClient.getClient();
+        const { data, error } = await supabase.auth.refreshSession({
+            refresh_token: refreshToken,
+        });
+
+        if (error) {
+            response.status = 401;
+            response.body = { error: error.message };
+
+            return;
+        }
+
+        response.status = 200;
+        response.body = {  session: data.session };
+    } catch (error) {
+        console.error((error as Error).message);
+        response.status = 500;
+        response.body = { error: "Internal Server Error" };
+    }
+}
+
+export { login, signup, refreshToken };
