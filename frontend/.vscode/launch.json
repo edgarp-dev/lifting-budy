@@ -1,0 +1,26 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "frontend",
+			"program": "${workspaceFolder}/dev.ts",
+			"runtimeExecutable": "deno",
+			"runtimeArgs": [
+				"run",
+				"--inspect-brk",
+				"--allow-net",
+				"--allow-env",
+				"--allow-read",
+				"--allow-write",
+				"--allow-run"
+			],
+			"attachSimplePort": 9229,
+			"cwd": "${workspaceFolder}",
+			"outputCapture": "std",
+			"problemMatcher": ["$deno"],
+			"console": "integratedTerminal"
+		}
+	]
+}
