@@ -1,21 +1,4 @@
 import { type PageProps } from "$fresh/server.ts";
-import { HandlerContext } from "$fresh/server.ts";
-import { requireAuth } from "../auth/authMiddleware.ts";
-import { protectedRuotes } from "./routes.ts";
-
-export const handler = {
-	async GET(req: Request, ctx: HandlerContext) {
-		const url = new URL(req.url);
-		if (protectedRuotes.includes(url.pathname)) {
-			const authReponse = await requireAuth(req);
-			console.log(authReponse);
-
-			if (authReponse) {
-				return authReponse;
-			}
-		}
-	},
-};
 
 export default function App({ Component }: PageProps) {
 	return (
