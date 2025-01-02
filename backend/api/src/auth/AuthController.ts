@@ -11,12 +11,18 @@ const login = async ({ request, response }: Context) => {
             password,
         });
 
-        if (error) {
+        const { data: userData, error: userError } = await supabase.from(
+            "users",
+        ).select("user_id").eq("email", email).single();
+
+        if (error || userError) {
             response.status = 400;
-            response.body = { error: error.message };
+
+            const errorMessage = error?.message || userError?.message;
+            response.body = { error: errorMessage };
         } else {
             response.status = 200;
-            response.body = { session: data.session };
+            response.body = { ...data.session, userId: userData?.user_id };
         }
     } catch (error) {
         console.error((error as Error).message);
@@ -94,12 +100,12 @@ const refreshToken = async ({ request, response }: Context) => {
         }
 
         response.status = 200;
-        response.body = {  session: data.session };
+        response.body = { session: data.session };
     } catch (error) {
         console.error((error as Error).message);
         response.status = 500;
         response.body = { error: "Internal Server Error" };
     }
-}
+};
 
-export { login, signup, refreshToken };
+export { login, refreshToken, signup };

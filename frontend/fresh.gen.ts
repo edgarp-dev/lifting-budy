@@ -6,11 +6,14 @@ import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
 import * as $_middleware from "./routes/_middleware.ts";
 import * as $index from "./routes/index.tsx";
-import * as $login from "./routes/login.tsx";
-import * as $profile from "./routes/profile.tsx";
+import * as $login_index from "./routes/login/index.tsx";
+import * as $profile_index from "./routes/profile/index.tsx";
 import * as $routes from "./routes/routes.ts";
-import * as $routines from "./routes/routines.tsx";
+import * as $routines_index from "./routes/routines/index.tsx";
+import * as $routines_new from "./routes/routines/new.tsx";
 import * as $Counter from "./islands/Counter.tsx";
+import * as $routines_islands_AddRoutineButton from "./routes/routines/(_islands)/AddRoutineButton.tsx";
+import * as $routines_islands_OkButton from "./routes/routines/(_islands)/OkButton.tsx";
 import type { Manifest } from "$fresh/server.ts";
 
 const manifest = {
@@ -19,13 +22,17 @@ const manifest = {
     "./routes/_app.tsx": $_app,
     "./routes/_middleware.ts": $_middleware,
     "./routes/index.tsx": $index,
-    "./routes/login.tsx": $login,
-    "./routes/profile.tsx": $profile,
+    "./routes/login/index.tsx": $login_index,
+    "./routes/profile/index.tsx": $profile_index,
     "./routes/routes.ts": $routes,
-    "./routes/routines.tsx": $routines,
+    "./routes/routines/index.tsx": $routines_index,
+    "./routes/routines/new.tsx": $routines_new,
   },
   islands: {
     "./islands/Counter.tsx": $Counter,
+    "./routes/routines/(_islands)/AddRoutineButton.tsx":
+      $routines_islands_AddRoutineButton,
+    "./routes/routines/(_islands)/OkButton.tsx": $routines_islands_OkButton,
   },
   baseUrl: import.meta.url,
 } satisfies Manifest;
