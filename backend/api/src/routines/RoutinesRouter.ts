@@ -20,14 +20,14 @@ router.put("/routines/:userId/:routineId", updateRoutine);
 router.delete("/routines/:userId/:id", deleteRoutine);
 
 router.post("/routines/:routineId/exercises", createExercise);
-router.get("/routines/:routineId/exercises", getExercises);
+router.get("/routines/:routineId/details", getExercises);
 
 router.post(
     "/routines/:routineId/exercises/:exerciseId/routine-exercises",
     createRoutineExercise,
 );
 router.get(
-    "/routines/:routineId/exercises/:exerciseId/routine-exercises/:id",
+    "/routines/:routineId/exercises/:exerciseId/details",
     getRoutineExercises,
 );
 

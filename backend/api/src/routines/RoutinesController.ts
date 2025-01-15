@@ -236,7 +236,7 @@ const getExercises = async ({ params, response }: Context) => {
     try {
         const { routineId } = params;
 
-        const { data, error } = await supabase
+        const { data: exercises, error: exercisesError } = await supabase
             .from("exercises")
             .select(`
             exercise_id,
@@ -245,14 +245,28 @@ const getExercises = async ({ params, response }: Context) => {
             `)
             .eq("routine_id", routineId);
 
-        if (error) {
+        const { data: routine, error: routineError } = await supabase
+            .from("routines")
+            .select(`description,is_completed`)
+            .eq("routine_id", routineId)
+            .single();
+
+        if (exercisesError || routineError) {
+            const errorMessage = exercisesError?.message ||
+                routineError?.message;
             response.status = 400;
-            response.body = { error: error.message };
+            response.body = { error: errorMessage };
 
             return;
         } else {
             response.status = 200;
-            response.body = data;
+
+            const { description, is_completed } = routine;
+            response.body = {
+                description,
+                isCompleted: is_completed,
+                exercises,
+            };
 
             return;
         }
@@ -301,27 +315,44 @@ const createRoutineExercise = async (
     }
 };
 
-const getRoutineExercises = async ({ params, request, response }: Context) => {
+const getRoutineExercises = async ({ params, response }: Context) => {
     try {
-        const { exerciseId, id } = params;
+        const { exerciseId } = params;
 
-        const { data, error } = await supabase.from("routineexercises")
-            .select(`
-          repetitions,
-          weight,
-          weight_measure
-          `)
-            .eq("routine_exercise_id", id)
-            .eq("exercise_id", exerciseId);
+        const { data: excerciseDetailsData, error: exerciseDetailsError } =
+            await supabase
+                .from("exercises")
+                .select("name,muscle")
+                .eq("exercise_id", exerciseId)
+                .single();
 
-        if (error) {
+        const { data: routineExercises, error: routineExercisesError } =
+            await supabase.from("routineexercises")
+                .select(`
+                    routine_exercise_id,
+                    repetitions,
+                    weight,
+                    weight_measure
+                `)
+                .eq("exercise_id", exerciseId);
+
+        if (routineExercisesError || exerciseDetailsError) {
+            const errorMessage = routineExercisesError?.message ||
+                exerciseDetailsError?.message;
+
             response.status = 400;
-            response.body = { error: error.message };
+            response.body = { error: errorMessage };
 
             return;
         } else {
             response.status = 200;
-            response.body = data;
+
+            const { name, muscle } = excerciseDetailsData;
+            response.body = {
+                name,
+                muscle,
+                routineExercises,
+            };
 
             return;
         }

@@ -23,7 +23,7 @@ export const handler: Handlers<Props> = {
 			const routines = await get<Routine[]>(routinesUrl, req.headers);
 
 			if (!routines || routines.length === 0) {
-				return ctx.renderNotFound({
+				return ctx.render({
 					message: "No routines",
 				});
 			}
@@ -32,7 +32,7 @@ export const handler: Handlers<Props> = {
 		} catch (error) {
 			console.error(error);
 
-			return ctx.renderNotFound({
+			return ctx.render({
 				message: "Error retrieving routines",
 			});
 		}
@@ -68,19 +68,20 @@ export default function RoutesPage(props: PageProps<Props>) {
 					</div>
 				</nav>
 				<ul role="list" class="divide-y divide-gray-100 mx-5">
-					{routines.map(({ description, date, is_completed }) => (
-						<li class="flex justify-between gap-x-6 py-5">
-							<div class="min-w-0 flex-auto">
-								<p class="text-sm/6 font-semibold text-gray-900">
-									{description}
+					{routines.map(({ routine_id, description, date, is_completed }) => (
+						<li class="flex justify-between gap-x-6 py-5 hover:bg-gray-100 cursor-pointer">
+							<a
+								href={`/routines/${routine_id}`}
+								class="flex flex-col min-w-0 flex-auto text-gray-900 hover:text-blue-600"
+							>
+								<p class="text-sm font-semibold">{description}</p>
+								<p class="mt-1 text-xs text-gray-500">
+									<time datetime={date}>{date}</time>
 								</p>
-								<p class="mt-1 text-xs/5 text-gray-500">
-									<time datetime="2023-01-23T13:23Z">{date}</time>
-								</p>
-								<p class="mt-1 text-xs/5 text-gray-500">
+								<p class="mt-1 text-xs text-gray-500">
 									{is_completed ? "Completed" : "In Progress"}
 								</p>
-							</div>
+							</a>
 						</li>
 					))}
 				</ul>
