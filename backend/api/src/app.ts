@@ -22,6 +22,6 @@ app.use(authRouter.allowedMethods());
 app.use(routinesController.routes());
 app.use(routinesController.allowedMethods());
 
-const port = Deno.env.get("PORT") ?? "8000";
+const port = Deno.env.get("PORT") ?? "9000";
 console.log(`Server running on http://localhost:${port}`);
 await app.listen({ port: parseInt(port) });

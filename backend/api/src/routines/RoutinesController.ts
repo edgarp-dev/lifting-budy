@@ -38,7 +38,7 @@ const createRoutine = async ({ params, request, response }: Context) => {
     }
 };
 
-const getRoutines = async ({ params, response }: Context) => {
+const getRoutines = async ({ params, request, response }: Context) => {
     try {
         const userId = params.userId;
 
@@ -49,10 +49,24 @@ const getRoutines = async ({ params, response }: Context) => {
             return;
         }
 
+        const page = parseInt(request.url.searchParams.get("page") ?? "1");
+        const pageSize = parseInt(
+            request.url.searchParams.get("pageSize") ?? "10",
+        );
+        const offset = (page - 1) * pageSize;
+
         const { data, error } = await supabase
             .from("routines")
             .select("*")
-            .eq("user_id", userId);
+            .eq("user_id", userId)
+            .order("is_completed", { ascending: true })
+            .order("date", { ascending: false })
+            .range(offset, offset + pageSize - 1);
+
+        const { count } = await supabase.from(
+            "routines",
+        ).select("*", { count: "exact" });
+        const totalResults = count ?? 0;
 
         if (error) {
             response.status = 400;
@@ -61,7 +75,12 @@ const getRoutines = async ({ params, response }: Context) => {
             return;
         } else {
             response.status = 200;
-            response.body = data;
+            response.body = {
+                routines: data,
+                currentPage: page,
+                totalPages: Math.ceil(totalResults / pageSize),
+                totalResults,
+            };
 
             return;
         }
