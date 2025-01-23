@@ -1,8 +1,11 @@
 import { FreshContext, Handlers, PageProps } from "$fresh/server.ts";
+import { Breadcrumb, addBreadcrumb } from "../(_islands)/Breadcrumb.tsx";
+import RoutineListItem from "../(_islands)/RoutineListItem.tsx";
 import { get } from "../../api/ApiClient.ts";
+import Navbar from "./(_components)/Navbar.tsx";
 import AddRoutineButton from "./(_islands)/AddRoutineButton.tsx";
 
-type Routine = {
+export type Routine = {
 	routine_id: number;
 	user_id: number;
 	date: string;
@@ -67,137 +70,88 @@ export default function RoutesPage(props: PageProps<Props>) {
 	const { routines, message, nextPage, currentPage, totalPages } = props.data;
 
 	if (message) {
-		return <p>{message}</p>;
+		return <p class="text-center text-gray-700 mt-12 text-lg">{message}</p>;
 	}
 
 	const renderPaginationLinks = () => {
 		const paginationLinks = [];
-		const range = 5;
-
+		const range = 2;
 		const startPage = Math.max(currentPage - range, 1);
 		const endPage = Math.min(currentPage + range, totalPages);
 
 		for (let i = startPage; i <= endPage; i++) {
-			if (i !== currentPage) {
-				paginationLinks.push(
-					<a
-						href={`?page=${i}`}
-						class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-					>
-						{i}
-					</a>
-				);
-			} else {
-				paginationLinks.push(
-					<a
-						href="#"
-						aria-current="page"
-						class="relative z-10 inline-flex items-center bg-indigo-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-					>
-						{i}
-					</a>
-				);
-			}
+			paginationLinks.push(
+				<a
+					href={`?page=${i}`}
+					class={`px-4 py-2 mx-1 rounded-md font-medium transition-all ${
+						i === currentPage
+							? "bg-indigo-600 text-white"
+							: "border border-gray-300 text-gray-700 hover:bg-gray-100"
+					}`}
+					aria-label={`Go to page ${i}`}
+				>
+					{i}
+				</a>
+			);
 		}
 
 		return paginationLinks;
 	};
 
-	const isFirstPage = currentPage === 1;
-	const isLastPage = !nextPage;
-
 	return (
-		<>
-			<div>
-				<nav class="sticky top-0 z-50 bg-gray-800">
-					<div class="mx-auto">
-						<div class="relative flex h-16 items-center justify-between">
-							<div class="flex flex-1">
-								<div>
-									<div class="flex space-x-4">
-										<p class="px-3 py-2 text-sm font-medium text-white">
-											Routines
-										</p>
-									</div>
-								</div>
-							</div>
-							<div>
-								<AddRoutineButton />
-							</div>
-						</div>
-					</div>
-				</nav>
-				<ul role="list" class="divide-y divide-gray-100 mx-5">
+		<div class="flex flex-col h-screen">
+			<Navbar title="Routines">
+				<AddRoutineButton />
+			</Navbar>
+			<div class="flex-1 overflow-y-auto container max-w-3xl mx-auto px-6 py-4">
+				<ul class="space-y-2">
 					{routines.map(({ routine_id, description, date, is_completed }) => (
-						<li class="flex justify-between gap-x-6 py-5 hover:bg-gray-100 cursor-pointer">
-							<a
-								href={!isFirstPage ? `/routines/${routine_id}` : "#"}
-								class="flex flex-col min-w-0 flex-auto text-gray-900 hover:text-blue-600"
-							>
-								<p class="text-sm font-semibold">{description}</p>
-								<p class="mt-1 text-xs text-gray-500">
-									<time datetime={date}>{date}</time>
+						<li
+							key={routine_id}
+							class="p-4 border border-gray-300 rounded-md hover:bg-gray-100 transition-all cursor-pointer"
+						>
+							<a href={`/routines/${routine_id}`} class="block">
+								<p class="text-lg font-semibold text-gray-900">{description}</p>
+								<p class="text-sm text-gray-500 mt-1">
+									<time dateTime={date}>{date}</time>
 								</p>
-								<p class="mt-1 text-xs text-gray-500">
-									{is_completed ? "Completed" : "In Progress"}
+								<p
+									class={`mt-1 text-sm font-medium ${
+										is_completed ? "text-teal-600" : "text-orange-500"
+									}`}
+								>
+									{is_completed ? "✔ Completed" : "⏳ In Progress"}
 								</p>
 							</a>
 						</li>
 					))}
 				</ul>
-
-				<div class="flex justify-center pt-4">
-					<nav
-						class="isolate inline-flex -space-x-px rounded-md shadow-sm"
-						aria-label="Pagination"
-					>
+			</div>
+			<div class="py-4 bg-white shadow-md">
+				<div class="flex justify-center">
+					<nav class="flex items-center space-x-2">
 						<a
 							href={`?page=${currentPage - 1}`}
-							class={`relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${
-								currentPage === 1 ? "cursor-not-allowed text-gray-300" : ""
+							class={`px-5 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-100 transition-all ${
+								currentPage === 1 ? "opacity-50 pointer-events-none" : ""
 							}`}
-							aria-disabled={currentPage === 1}
-							disabled={currentPage === 1}
+							aria-label="Previous page"
 						>
-							<span class="sr-only">Previous</span>
-							<svg
-								class="size-5"
-								viewBox="0 0 20 20"
-								fill="currentColor"
-								aria-hidden="true"
-							>
-								<path
-									fill-rule="evenodd"
-									d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z"
-									clip-rule="evenodd"
-								/>
-							</svg>
+							← Previous
 						</a>
 						{renderPaginationLinks()}
 						<a
-							href={!isLastPage ? `?page=${nextPage}` : "#"}
-							class={`relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${
-								!nextPage ? "cursor-not-allowed text-gray-300" : ""
+							href={nextPage ? `?page=${nextPage}` : "#"}
+							class={`px-5 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-100 transition-all ${
+								!nextPage ? "opacity-50 pointer-events-none" : ""
 							}`}
-							aria-disabled={!nextPage}
-							disabled={!nextPage}
+							aria-label="Next page"
 						>
-							<svg
-								class="size-5"
-								viewBox="0 0 20 20"
-								fill="currentColor"
-								aria-hidden="true"
-							>
-								<path
-									fill-rule="evenodd"
-									d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z"
-									clip-rule="evenodd"
-								/>
-							</svg>
+							Next →
 						</a>
 					</nav>
 				</div>
 			</div>
-		</>
+		</div>
 	);
 }

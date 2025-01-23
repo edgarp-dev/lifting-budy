@@ -3,6 +3,8 @@ import { get } from "../../../api/ApiClient.ts";
 import { getSessionToken, getUserId } from "../../../auth/SessionManager.ts";
 import RedirectButton from "../(_islands)/RedirectButton.tsx";
 import ToggleIsCompleted from "../(_islands)/ToggleIsCompleted.tsx";
+import { addBreadcrumb, Breadcrumb } from "../../(_islands)/Breadcrumb.tsx";
+import BackButton from "../../(_islands)/Backbutton.tsx";
 
 type Exercise = {
 	exercise_id: number;
@@ -101,6 +103,7 @@ export default function RoutineDetails(props: PageProps<Props>) {
 					</div>
 				</div>
 			</nav>
+			<BackButton />
 			<div class="min-h-screen flex bg-gray-100">
 				<div class="container mx-auto p-4">
 					<ToggleIsCompleted
