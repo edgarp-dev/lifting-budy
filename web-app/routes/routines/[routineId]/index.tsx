@@ -4,7 +4,7 @@ import { getSessionToken, getUserId } from "../../../auth/SessionManager.ts";
 import RedirectButton from "../(_islands)/RedirectButton.tsx";
 import ToggleIsCompleted from "../(_islands)/ToggleIsCompleted.tsx";
 import { addBreadcrumb, Breadcrumb } from "../../(_islands)/Breadcrumb.tsx";
-import BackButton from "../../(_islands)/Backbutton.tsx";
+import BackButton from "../../(_islands)/BackButton.tsx";
 
 type Exercise = {
 	exercise_id: number;

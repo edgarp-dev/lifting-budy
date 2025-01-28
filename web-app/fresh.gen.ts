@@ -17,7 +17,7 @@ import * as $routines_index from "./routes/routines/index.tsx";
 import * as $routines_new from "./routes/routines/new.tsx";
 import * as $Counter from "./islands/Counter.tsx";
 import * as $_islands_AddButton from "./routes/(_islands)/AddButton.tsx";
-import * as $_islands_Backbutton from "./routes/(_islands)/Backbutton.tsx";
+import * as $_islands_BackButton from "./routes/(_islands)/BackButton.tsx";
 import * as $_islands_Breadcrumb from "./routes/(_islands)/Breadcrumb.tsx";
 import * as $_islands_RoutineListItem from "./routes/(_islands)/RoutineListItem.tsx";
 import * as $routines_islands_FormButtonWithLoader from "./routes/routines/(_islands)/FormButtonWithLoader.tsx";
@@ -48,7 +48,7 @@ const manifest = {
   islands: {
     "./islands/Counter.tsx": $Counter,
     "./routes/(_islands)/AddButton.tsx": $_islands_AddButton,
-    "./routes/(_islands)/Backbutton.tsx": $_islands_Backbutton,
+    "./routes/(_islands)/BackButton.tsx": $_islands_BackButton,
     "./routes/(_islands)/Breadcrumb.tsx": $_islands_Breadcrumb,
     "./routes/(_islands)/RoutineListItem.tsx": $_islands_RoutineListItem,
     "./routes/routines/(_islands)/FormButtonWithLoader.tsx":

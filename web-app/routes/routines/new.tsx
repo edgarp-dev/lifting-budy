@@ -1,103 +1,129 @@
-import { Handlers, FreshContext, PageProps } from "$fresh/server.ts";
+import { FreshContext, Handlers, PageProps } from "$fresh/server.ts";
+import BackButton from "../(_islands)/BackButton.tsx"; // Asegúrate de que la ruta sea correcta
 import { post } from "../../api/ApiClient.ts";
 import { getUserId } from "../../auth/SessionManager.ts";
+import Navbar from "./(_components)/Navbar.tsx";
 import OkButton from "./(_islands)/OkButton.tsx";
 
 interface Props {
-	success: boolean;
+  success: boolean;
+  error?: string; // Para manejar mensajes de error
 }
 
 type NewRoutineResponse = {
-	routineId: number;
+  routineId: number;
 };
 
 export const handler: Handlers<Props> = {
-	async POST(req: Request, ctx: FreshContext) {
-		try {
-			const userId = getUserId(req.headers);
-			const formData = await req.formData();
-			const routineName = formData.get("routine_name") as string;
-			const isCompleted = false;
+  async POST(req: Request, ctx: FreshContext) {
+    try {
+      const userId = getUserId(req.headers);
+      const formData = await req.formData();
+      const routineName = formData.get("routine_name") as string;
+      const isCompleted = false;
 
-			const newRoutinePostUrl = `https://mdy2rbcypyehddeuvi2s55k56i0mkqtm.lambda-url.us-east-1.on.aws/routines/${userId}`;
-			const response = await post<NewRoutineResponse>(
-				newRoutinePostUrl,
-				req.headers,
-				{
-					description: routineName,
-					isCompleted,
-				}
-			);
+      if (!routineName?.trim()) {
+        return ctx.render({
+          success: false,
+          error: "Routine name is required",
+        });
+      }
 
-			if (!response?.routineId) {
-				return ctx.render({ success: false });
-			}
+      const newRoutinePostUrl =
+        `https://mdy2rbcypyehddeuvi2s55k56i0mkqtm.lambda-url.us-east-1.on.aws/routines/${userId}`;
+      const response = await post<NewRoutineResponse>(
+        newRoutinePostUrl,
+        req.headers,
+        {
+          description: routineName,
+          isCompleted,
+        },
+      );
 
-			return ctx.render({ success: true });
-		} catch (error) {
-			console.error(error);
+      if (!response?.routineId) {
+        return ctx.render({
+          success: false,
+          error: "Failed to create routine",
+        });
+      }
 
-			return ctx.render({ success: false });
-		}
-	},
+      return ctx.render({ success: true });
+    } catch (error) {
+      console.error(error);
+      return ctx.render({
+        success: false,
+        error: "An unexpected error occurred",
+      });
+    }
+  },
 };
 
 export default function NewRoutine(props: PageProps<Props>) {
-	const success = props.data?.success;
+  const { success, error } = props.data || {};
 
-	return (
-		<>
-			<nav class="sticky top-0 z-50 bg-gray-800">
-				<div class="mx-auto">
-					<div class="relative flex h-16 items-center justify-between">
-						<div class="flex flex-1">
-							<div>
-								<div class="flex space-x-4">
-									<p class="px-3 py-2 text-sm font-medium text-white">
-										Add new routine
-									</p>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</nav>
-			<div class="min-h-screen bg-gray-100 flex items-center justify-center">
-				<div class="bg-white shadow-sm rounded-sm p-6 w-full max-w-md">
-					{!success ? (
-						<form method="post">
-							<div class="mb-4">
-								<label
-									for="routine_name"
-									class="block text-sm font-medium text-gray-700"
-								>
-									Name
-								</label>
-								<input
-									type="text"
-									id="routine_name"
-									name="routine_name"
-									required
-									class="mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-blue-500 focus:ring-blue-500"
-								/>
-							</div>
-							<button
-								type="submit"
-								class="w-full bg-blue-500 text-white font-semibold py-2 px-4 rounded-sm hover:bg-blue-600"
-							>
-								Save
-							</button>
-						</form>
-					) : (
-						<div class="text-center">
-							<p class="text-green-600 font-semibold mb-4">
-								Routine created successfully
-							</p>
-							<OkButton destinationUrl="/routines" />
-						</div>
-					)}
-				</div>
-			</div>
-		</>
-	);
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar title="Add New Routine" />
+      <div class="m-2">
+        <BackButton href="/routines" label="Back to Routines" />
+      </div>
+      <div class="flex items-center justify-center p-4">
+        <div class="rounded border border-gray-300 p-8 w-full max-w-md">
+          {!success
+            ? (
+              <form method="post">
+                <div class="mb-6">
+                  <label
+                    for="routine_name"
+                    class="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Routine Name
+                  </label>
+                  <input
+                    type="text"
+                    id="routine_name"
+                    name="routine_name"
+                    required
+                    class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Enter routine name"
+                  />
+                  {error && <p class="text-red-500 text-sm mt-2">{error}</p>}
+                </div>
+                <button
+                  type="submit"
+                  class="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 transition-all"
+                >
+                  Save
+                </button>
+              </form>
+            )
+            : (
+              <div class="text-center">
+                <svg
+                  class="mx-auto h-12 w-12 text-green-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  >
+                  </path>
+                </svg>
+                <p class="mt-4 text-lg font-semibold text-gray-800">
+                  Routine created successfully!
+                </p>
+                <div class="mt-6">
+                  <OkButton destinationUrl="/routines" />
+                </div>
+              </div>
+            )}
+        </div>
+      </div>
+    </div>
+  );
 }

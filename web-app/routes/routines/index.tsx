@@ -107,7 +107,7 @@ export default function RoutesPage(props: PageProps<Props>) {
           {routines.map(({ routine_id, description, date, is_completed }) => (
             <li
               key={routine_id}
-              class="p-4 border border-gray-300 rounded-md hover:bg-gray-100 transition-all cursor-pointer"
+              class="p-4 border border-gray-300 rounded hover:bg-gray-100 transition-all cursor-pointer"
             >
               <a href={`/routines/${routine_id}`} class="block">
                 <p class="text-lg font-semibold text-gray-900">{description}</p>
@@ -131,7 +131,7 @@ export default function RoutesPage(props: PageProps<Props>) {
           <nav class="flex items-center space-x-2">
             <a
               href={`?page=${currentPage - 1}`}
-              class={`px-5 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-100 transition-all ${
+              class={`px-5 py-2 border border-gray-300 rounded bg-white hover:bg-gray-100 transition-all ${
                 currentPage === 1 ? "opacity-50 pointer-events-none" : ""
               }`}
               aria-label="Previous page"
@@ -141,7 +141,7 @@ export default function RoutesPage(props: PageProps<Props>) {
             {renderPaginationLinks()}
             <a
               href={nextPage ? `?page=${nextPage}` : "#"}
-              class={`px-5 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-100 transition-all ${
+              class={`px-5 py-2 border border-gray-300 rounded bg-white hover:bg-gray-100 transition-all ${
                 !nextPage ? "opacity-50 pointer-events-none" : ""
               }`}
               aria-label="Next page"
