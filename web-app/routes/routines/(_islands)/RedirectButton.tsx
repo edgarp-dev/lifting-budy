@@ -9,7 +9,7 @@ const RedirectButton = ({ destinationUrl, text }: Props) => {
 			onClick={() => {
 				location.href = destinationUrl;
 			}}
-			class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm"
+			class="bg-slate-800 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded-sm"
 		>
 			{text}
 		</button>

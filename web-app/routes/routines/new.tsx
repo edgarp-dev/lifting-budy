@@ -91,7 +91,7 @@ export default function NewRoutine(props: PageProps<Props>) {
                 </div>
                 <button
                   type="submit"
-                  class="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 transition-all"
+                  class="w-full bg-slate-800 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 transition-all"
                 >
                   Save
                 </button>

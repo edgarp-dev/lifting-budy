@@ -2,6 +2,8 @@ import { FreshContext, Handlers, PageProps } from "$fresh/server.ts";
 import { get } from "../../api/ApiClient.ts";
 import Navbar from "./(_components)/Navbar.tsx";
 import AddButton from "../(_islands)/AddButton.tsx";
+import BorderTable from "../(_islands)/BoderTable.tsx";
+import BorderTableItem from "../(_islands)/BorderTableItem.tsx";
 
 export type Routine = {
   routine_id: number;
@@ -72,6 +74,26 @@ export default function RoutesPage(props: PageProps<Props>) {
     return <p class="text-center text-gray-700 mt-12 text-lg">{message}</p>;
   }
 
+  const renderRoutines = () => {
+    return routines.map(({ routine_id, description, date, is_completed }) => (
+      <BorderTableItem key={routine_id}>
+        <a href={`/routines/${routine_id}`} class="block">
+          <p class="text-lg font-semibold text-gray-900">{description}</p>
+          <p class="text-sm text-gray-500 mt-1">
+            <time dateTime={date}>{date}</time>
+          </p>
+          <p
+            class={`mt-1 text-sm font-medium ${
+              is_completed ? "text-teal-600" : "text-orange-500"
+            }`}
+          >
+            {is_completed ? "✔ Completed" : "⏳ In Progress"}
+          </p>
+        </a>
+      </BorderTableItem>
+    ));
+  };
+
   const renderPaginationLinks = () => {
     const paginationLinks = [];
     const range = 2;
@@ -102,30 +124,9 @@ export default function RoutesPage(props: PageProps<Props>) {
       <Navbar title="Routines">
         <AddButton to="/routines/new" />
       </Navbar>
-      <div class="flex-1 overflow-y-auto container max-w-3xl mx-auto px-6 py-4">
-        <ul class="space-y-2">
-          {routines.map(({ routine_id, description, date, is_completed }) => (
-            <li
-              key={routine_id}
-              class="p-4 border border-gray-300 rounded hover:bg-gray-100 transition-all cursor-pointer"
-            >
-              <a href={`/routines/${routine_id}`} class="block">
-                <p class="text-lg font-semibold text-gray-900">{description}</p>
-                <p class="text-sm text-gray-500 mt-1">
-                  <time dateTime={date}>{date}</time>
-                </p>
-                <p
-                  class={`mt-1 text-sm font-medium ${
-                    is_completed ? "text-teal-600" : "text-orange-500"
-                  }`}
-                >
-                  {is_completed ? "✔ Completed" : "⏳ In Progress"}
-                </p>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <BorderTable>
+        {renderRoutines()}
+      </BorderTable>
       <div class="py-4 bg-white shadow-md">
         <div class="flex justify-center">
           <nav class="flex items-center space-x-2">
@@ -146,7 +147,7 @@ export default function RoutesPage(props: PageProps<Props>) {
               }`}
               aria-label="Next page"
             >
-            →
+              →
             </a>
           </nav>
         </div>
