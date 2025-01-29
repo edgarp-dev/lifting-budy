@@ -29,7 +29,7 @@ const BackButton: FunctionComponent<BackButtonProps> = ({
         >
         </path>
       </svg>
-      <span class="text-black font-medium">{label}</span>
+      <span class="text-slate-800 font-medium">{label}</span>
     </a>
   );
 };

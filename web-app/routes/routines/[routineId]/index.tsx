@@ -90,12 +90,12 @@ export default function RoutineDetails(props: PageProps<Props>) {
   } = routineInfo;
 
   return (
-    <div>
+    <div class=" h-screen">
       <Navbar title={description} />
       <div class="m-2">
-        <BackButton href="/routines" label="Back to Routines" />
+        <BackButton href="/routines" label="Back to routines" />
       </div>
-      <div class="min-h-screen flex bg-gray-100">
+      <div class="flex bg-gray-100">
         <div class="container mx-auto">
           <div class="flex flex-row items-center justify-between rounded border border-gray-300 p-8 mx-6">
             <ToggleIsCompleted
