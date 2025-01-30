@@ -1,120 +1,145 @@
 import { FreshContext, Handlers, PageProps } from "$fresh/server.ts";
+import Navbar from "../../../../(_components)/Navbar.tsx";
+import SuccessMessage from "../../../../(_components)/SuccessMessage.tsx";
 import FormButtonWithLoader from "../../../../(_islands)/FormButtonWithLoader.tsx";
-import RedirectButton from "../../../../(_islands)/RedirectButton.tsx";
+import BackButton from "../../../../../(_islands)/BackButton.tsx";
 import { post } from "../../../../../../api/ApiClient.ts";
 
 interface Props {
-	success: boolean;
-	routineId?: string;
-	exerciseId?: string;
+  success: boolean;
+  routineId?: string;
+  exerciseId?: string;
+  error?: string;
 }
 
 export const handler: Handlers<Props> = {
-	async POST(req: Request, ctx: FreshContext) {
-		try {
-			const formData = await req.formData();
-			const repetitions = formData.get("repetitions") as string;
-			const weight = formData.get("weight") as string;
-			const weightMeasure = "kg";
+  GET(_req: Request, ctx: FreshContext) {
+    const { routineId, exerciseId } = ctx.params;
 
-			const { routineId, exerciseId } = ctx.params;
+    return ctx.render({ success: false, routineId, exerciseId });
+  },
+  async POST(req: Request, ctx: FreshContext) {
+    const { routineId, exerciseId } = ctx.params;
 
-			const newRoutineExerciseUrl = `https://mdy2rbcypyehddeuvi2s55k56i0mkqtm.lambda-url.us-east-1.on.aws/routines/${routineId}/exercises/${exerciseId}/routine-exercises`;
-			const response = await post<{ routineExerciseId: number }>(
-				newRoutineExerciseUrl,
-				req.headers,
-				{
-					repetitions,
-					weight,
-					weightMeasure,
-				}
-			);
+    try {
+      const formData = await req.formData();
+      const repetitions = formData.get("repetitions") as string;
+      const weight = formData.get("weight") as string;
+      const weightMeasure = "kg";
 
-			if (!response?.routineExerciseId) {
-				return ctx.render({ success: false });
-			}
+      if (!repetitions?.trim() || !weight?.trim()) {
+        return ctx.render({
+          success: false,
+          error: "Repetitions and weight are required",
+          routineId,
+          exerciseId,
+        });
+      }
 
-			return ctx.render({ success: true, routineId, exerciseId });
-		} catch (error) {
-			console.error(error);
-			return ctx.render({ success: false });
-		}
-	},
+      const baseUrl = Deno.env.get("BASE_URL");
+      const newRoutineExerciseUrl =
+        `${baseUrl}/routines/${routineId}/exercises/${exerciseId}/routine-exercises`;
+      const response = await post<{ routineExerciseId: number }>(
+        newRoutineExerciseUrl,
+        req.headers,
+        {
+          repetitions,
+          weight,
+          weightMeasure,
+        },
+      );
+
+      if (!response?.routineExerciseId) {
+        return ctx.render({
+          success: false,
+          error: "Failed to save routine exercise",
+          routineId,
+          exerciseId,
+        });
+      }
+
+      return ctx.render({ success: true, routineId, exerciseId });
+    } catch (error) {
+      console.error(error);
+      return ctx.render({
+        success: false,
+        error: (error as Error).message,
+        routineId,
+        exerciseId,
+      });
+    }
+  },
 };
 
 export default function NewRoutineExercise({ data }: PageProps<Props>) {
-	const { success, routineId, exerciseId } = data || { success: false };
-	return (
-		<>
-			<nav class="sticky top-0 z-50 bg-gray-800">
-				<div class="mx-auto">
-					<div class="relative flex h-16 items-center justify-between">
-						<div class="flex flex-1">
-							<div>
-								<div class="flex space-x-4">
-									<p class="px-3 py-2 text-sm font-medium text-white">
-										Create routine exercise
-									</p>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</nav>
-			<div class="min-h-screen bg-gray-100 flex items-center justify-center">
-				<div class="bg-white shadow-md rounded-lg p-6 max-w-md w-full">
-					{!success ? (
-						<form id="new-exercise-form" method="post" class="space-y-4">
-							<div>
-								<label
-									htmlFor="repetitions"
-									class="block text-sm font-medium text-gray-700"
-								>
-									Reps
-								</label>
-								<input
-									id="repetitions"
-									name="repetitions"
-									type="number"
-									required
-									class="mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-blue-500 focus:ring-blue-500"
-								/>
-							</div>
+  const { success, routineId, exerciseId, error } = data || { success: false };
+  return (
+    <div class="h-screen">
+      <Navbar title="Create routine exercise" />
+      <div class="m-2">
+        <BackButton
+          href={`/routines/${routineId}/exercises/${exerciseId}`}
+          label="Back to routines"
+        />
+      </div>
+      <div class="flex items-center justify-center p-4">
+        <div class="rounded border border-gray-300 p-8 w-full max-w-md">
+          {!success
+            ? (
+              <form
+                id="new-routine-exercise-form"
+                method="post"
+                class="space-y-4"
+              >
+                <div>
+                  <label
+                    htmlFor="repetitions"
+                    class="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Reps
+                  </label>
+                  <input
+                    id="repetitions"
+                    name="repetitions"
+                    type="number"
+                    required
+                    class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Enter number of repetitions"
+                  />
+                </div>
 
-							<div>
-								<label
-									htmlFor="weight"
-									class="block text-sm font-medium text-gray-700"
-								>
-									Weight
-								</label>
-								<input
-									id="weight"
-									name="weight"
-									type="number"
-									required
-									class="mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-blue-500 focus:ring-blue-500"
-								/>
-							</div>
-							<FormButtonWithLoader
-								text="Save"
-								formId="new-exercise-form"
-								showLoader={!success}
-							/>
-						</form>
-					) : (
-						<div class="text-center">
-							<h1 class="text-2xl font-bold text-green-600 mb-4">
-								New routine excersice saved successfully
-							</h1>
-							<RedirectButton
-								text="Ok"
-								destinationUrl={`/routines/${routineId}/exercises/${exerciseId}`}
-							/>
-						</div>
-					)}
-				</div>
-			</div>
-		</>
-	);
+                <div>
+                  <label
+                    htmlFor="weight"
+                    class="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Weight
+                  </label>
+                  <input
+                    id="weight"
+                    name="weight"
+                    type="number"
+                    required
+                    class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Enter weight in kg"
+                  />
+                </div>
+                {error && <p class="text-red-500 text-sm mt-2">{error}</p>}
+                <FormButtonWithLoader
+                  text="Save"
+                  formId="new-routine-exercise-form"
+                  showLoader={!success}
+                />
+              </form>
+            )
+            : (
+              <SuccessMessage
+                message="New routine excersice saved successfully!"
+                destinationUrl={`/routines/${routineId}/exercises/${exerciseId}`}
+              />
+            )}
+        </div>
+      </div>
+    </div>
+  );
 }

@@ -23,8 +23,8 @@ const ToggleIsCompleted = ({
     setLoading(true);
 
     const updateRoutineIsCompleted = async () => {
-      const updateRoutineUrl =
-        `https://mdy2rbcypyehddeuvi2s55k56i0mkqtm.lambda-url.us-east-1.on.aws/routines/${userId}/${routineId}`;
+      const baseUrl = Deno.env.get("BASE_URL");
+      const updateRoutineUrl = `${baseUrl}routines/${userId}/${routineId}`;
       await clientPut<{ id: number }>(updateRoutineUrl, sessionToken, {
         isCompleted: checked,
       });

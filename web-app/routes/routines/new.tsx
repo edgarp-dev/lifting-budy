@@ -30,8 +30,8 @@ export const handler: Handlers<Props> = {
         });
       }
 
-      const newRoutinePostUrl =
-        `https://mdy2rbcypyehddeuvi2s55k56i0mkqtm.lambda-url.us-east-1.on.aws/routines/${userId}`;
+      const baseUrl = Deno.env.get("BASE_URL");
+      const newRoutinePostUrl = `${baseUrl}/routines/${userId}`;
       const response = await post<NewRoutineResponse>(
         newRoutinePostUrl,
         req.headers,
@@ -98,7 +98,10 @@ export default function NewRoutine(props: PageProps<Props>) {
               </form>
             )
             : (
-              <SuccessMessage message="Routine created successfully!" destinationUrl="/routines"/>
+              <SuccessMessage
+                message="Routine created successfully!"
+                destinationUrl="/routines"
+              />
             )}
         </div>
       </div>

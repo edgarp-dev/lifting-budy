@@ -22,14 +22,22 @@ export const handler: Handlers<Props> = {
     return ctx.render({ success: false, routineId });
   },
   async POST(req: Request, ctx: FreshContext) {
+    const { routineId } = ctx.params;
     try {
       const formData = await req.formData();
       const name = formData.get("name") as string;
       const muscle = formData.get("muscle") as string;
-      const routineId = ctx.params.routineId;
 
-      const newExercisePostUrl =
-        `https://mdy2rbcypyehddeuvi2s55k56i0mkqtm.lambda-url.us-east-1.on.aws/routines/${routineId}/exercises`;
+      if (!name?.trim() || !muscle?.trim()) {
+        return ctx.render({
+          success: false,
+          error: "Name and muscle are required",
+          routineId,
+        });
+      }
+
+      const baseUrl = Deno.env.get("BASE_URL");
+      const newExercisePostUrl = `${baseUrl}/routines/${routineId}/exercises`;
       const response = await post<NewExcersiceResponse>(
         newExercisePostUrl,
         req.headers,
@@ -40,14 +48,22 @@ export const handler: Handlers<Props> = {
       );
 
       if (!response?.exerciseId) {
-        return ctx.render({ success: false });
+        return ctx.render({
+          success: false,
+          error: "Failed to save exercise",
+          routineId,
+        });
       }
 
       return ctx.render({ success: true, routineId });
     } catch (error) {
       console.error(error);
 
-      return ctx.render({ success: false, error: (error as Error).message });
+      return ctx.render({
+        success: false,
+        error: (error as Error).message,
+        routineId,
+      });
     }
   },
 };

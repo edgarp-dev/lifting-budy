@@ -16,8 +16,10 @@ export async function requireAuth(req: Request): Promise<Response | undefined> {
     if (isSessionExpired(req.headers)) {
       console.log("Token expired");
       const refreshTokenCookie = cookies.refresh_token;
+
+      const baseUrl = Deno.env.get("BASE_URL");
       const refreshResponse = await fetch(
-        "https://mdy2rbcypyehddeuvi2s55k56i0mkqtm.lambda-url.us-east-1.on.aws/refresh",
+        `${baseUrl}/refresh`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

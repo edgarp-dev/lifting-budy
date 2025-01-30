@@ -38,8 +38,8 @@ export const handler: Handlers<Props> = {
   async GET(req, ctx) {
     const { routineId } = ctx.params;
 
-    const routineDetailsUrl =
-      `https://mdy2rbcypyehddeuvi2s55k56i0mkqtm.lambda-url.us-east-1.on.aws/routines/${routineId}/details`;
+    const baseUrl = Deno.env.get("BASE_URL");
+    const routineDetailsUrl = `${baseUrl}s/routines/${routineId}/details`;
 
     const routineDetails = await get<RoutineDetails>(
       routineDetailsUrl,
@@ -90,20 +90,25 @@ export default function RoutineDetails(props: PageProps<Props>) {
   } = routineInfo;
 
   return (
-    <div class=" h-screen">
+    <div class="h-screen">
       <Navbar title={description} />
       <div class="m-2">
         <BackButton href="/routines" label="Back to routines" />
       </div>
       <div class="flex bg-gray-100">
-        <div class="container mx-auto">
+        <div class="container mx-auto max-w-3xl">
           <div class="flex flex-row items-center justify-between rounded border border-gray-300 p-8 mx-6">
-            <ToggleIsCompleted
-              isCompleted={isCompleted}
-              routineId={routineId}
-              userId={userId}
-              sessionToken={sessionToken}
-            />
+            <div class="flex flex-col">
+              <p class="text-lg font-semibold text-gray-900 mb-2">
+                {isCompleted ? "Completed" : "In progress"}
+              </p>
+              <ToggleIsCompleted
+                isCompleted={isCompleted}
+                routineId={routineId}
+                userId={userId}
+                sessionToken={sessionToken}
+              />
+            </div>
             <RedirectButton
               text="Add Exercise"
               destinationUrl={`/routines/${routineId}/exercises/new`}
