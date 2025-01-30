@@ -22,11 +22,11 @@ type RoutineDetails = {
 
 type RoutineInfo = {
   routineId: string;
-  userId: string;
   description: string;
   isCompleted: boolean;
   exercises: Exercise[];
   sessionToken: string;
+  updateRoutineUrl: string;
 };
 
 interface Props {
@@ -39,7 +39,7 @@ export const handler: Handlers<Props> = {
     const { routineId } = ctx.params;
 
     const baseUrl = Deno.env.get("BASE_URL");
-    const routineDetailsUrl = `${baseUrl}s/routines/${routineId}/details`;
+    const routineDetailsUrl = `${baseUrl}/routines/${routineId}/details`;
 
     const routineDetails = await get<RoutineDetails>(
       routineDetailsUrl,
@@ -53,15 +53,16 @@ export const handler: Handlers<Props> = {
     const { description, isCompleted, exercises } = routineDetails;
     const sessionToken = getSessionToken(req.headers);
     const userId = getUserId(req.headers);
+    const updateRoutineUrl = `${baseUrl}/routines/${userId}/${routineId}`;
 
     return ctx.render({
       routineInfo: {
         routineId,
-        userId,
         description,
         isCompleted,
         exercises,
         sessionToken,
+        updateRoutineUrl,
       },
     });
   },
@@ -82,11 +83,11 @@ export default function RoutineDetails(props: PageProps<Props>) {
 
   const {
     routineId,
-    userId,
     description,
     isCompleted,
     exercises,
     sessionToken,
+    updateRoutineUrl,
   } = routineInfo;
 
   return (
@@ -100,13 +101,12 @@ export default function RoutineDetails(props: PageProps<Props>) {
           <div class="flex flex-row items-center justify-between rounded border border-gray-300 p-8 mx-6">
             <div class="flex flex-col">
               <p class="text-lg font-semibold text-gray-900 mb-2">
-                {isCompleted ? "Completed" : "In progress"}
+                Is completed?
               </p>
               <ToggleIsCompleted
                 isCompleted={isCompleted}
-                routineId={routineId}
-                userId={userId}
                 sessionToken={sessionToken}
+                updateRoutineUrl={updateRoutineUrl}
               />
             </div>
             <RedirectButton

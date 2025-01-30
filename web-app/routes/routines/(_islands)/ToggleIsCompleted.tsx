@@ -3,15 +3,13 @@ import { clientPut } from "../../../api/ApiClient.ts";
 
 interface Props {
   isCompleted: boolean;
-  routineId: string;
-  userId: string;
   sessionToken: string;
+  updateRoutineUrl: string;
 }
 
 const ToggleIsCompleted = ({
   isCompleted,
-  routineId,
-  userId,
+  updateRoutineUrl,
   sessionToken,
 }: Props) => {
   const [checked, setChecked] = useState(isCompleted);
@@ -23,8 +21,6 @@ const ToggleIsCompleted = ({
     setLoading(true);
 
     const updateRoutineIsCompleted = async () => {
-      const baseUrl = Deno.env.get("BASE_URL");
-      const updateRoutineUrl = `${baseUrl}routines/${userId}/${routineId}`;
       await clientPut<{ id: number }>(updateRoutineUrl, sessionToken, {
         isCompleted: checked,
       });
