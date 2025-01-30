@@ -16,7 +16,7 @@ type NewExcersiceResponse = {
 };
 
 export const handler: Handlers<Props> = {
-  GET(req: Request, ctx: FreshContext) {
+  GET(_req: Request, ctx: FreshContext) {
     const { routineId } = ctx.params;
 
     return ctx.render({ success: false, routineId });

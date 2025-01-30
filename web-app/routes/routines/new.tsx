@@ -1,15 +1,14 @@
 import { FreshContext, Handlers, PageProps } from "$fresh/server.ts";
-import BackButton from "../(_islands)/BackButton.tsx"; // Asegúrate de que la ruta sea correcta
+import BackButton from "../(_islands)/BackButton.tsx";
 import { post } from "../../api/ApiClient.ts";
 import { getUserId } from "../../auth/SessionManager.ts";
 import Navbar from "./(_components)/Navbar.tsx";
 import SuccessMessage from "./(_components)/SuccessMessage.tsx";
 import FormButtonWithLoader from "./(_islands)/FormButtonWithLoader.tsx";
-import OkButton from "./(_islands)/OkButton.tsx";
 
 interface Props {
   success: boolean;
-  error?: string; // Para manejar mensajes de error
+  error?: string;
 }
 
 type NewRoutineResponse = {
