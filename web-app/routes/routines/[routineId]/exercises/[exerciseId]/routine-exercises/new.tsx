@@ -134,7 +134,7 @@ export default function NewRoutineExercise({ data }: PageProps<Props>) {
             )
             : (
               <SuccessMessage
-                message="New routine excersice saved successfully!"
+                message="New routine exercise saved successfully!"
                 destinationUrl={`/routines/${routineId}/exercises/${exerciseId}`}
               />
             )}

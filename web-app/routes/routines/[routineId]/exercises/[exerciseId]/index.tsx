@@ -73,7 +73,7 @@ export default function ExeciseDetails(props: PageProps<Props>) {
 
   return (
     <div class="h-screen">
-      <Navbar title="Excersice details" />
+      <Navbar title="Exercise details" />
       <div class="m-2">
         <BackButton
           href={`/routines/${routineId}`}
@@ -81,18 +81,18 @@ export default function ExeciseDetails(props: PageProps<Props>) {
         />
       </div>
       <div class="flex bg-gray-100">
-        <div class="container mx-auto p-4">
-          <div class="flex flex-row items-center justify-between rounded border border-gray-300 p-8 mx-6">
-            <div class="flex flex-col">
+        <div class="container mx-auto p-4 max-w-3xl">
+          <div class="flex flex-col justify-between rounded border border-gray-300 p-8 mx-6">
+            <div class="mb-4">
               <p class="text-xl font-bold text-gray-800">{name}</p>
               <p class="text-sm font-medium text-gray-600">Muscle: {muscle}</p>
             </div>
             <RedirectButton
-              text="Add routine excersise"
+              text="Add routine exercise"
               destinationUrl={`/routines/${routineId}/exercises/${exerciseId}/routine-exercises/new`}
             />
           </div>
-          <div class="mt-4 max-h-[400px] overflow-y-auto">
+          <div class="mt-4 flex-grow h-[calc(100vh-340px)] overflow-y-auto">
             <BorderTable>
               {routineExercises?.map(
                 ({

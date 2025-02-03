@@ -98,8 +98,8 @@ export default function RoutineDetails(props: PageProps<Props>) {
       </div>
       <div class="flex bg-gray-100">
         <div class="container mx-auto max-w-3xl">
-          <div class="flex flex-row items-center justify-between rounded border border-gray-300 p-8 mx-6">
-            <div class="flex flex-col">
+          <div class="flex flex-col justify-between rounded border border-gray-300 p-8 mx-6">
+            <div class="flex flex-col mb-4">
               <p class="text-lg font-semibold text-gray-900 mb-2">
                 Is completed?
               </p>
@@ -114,7 +114,7 @@ export default function RoutineDetails(props: PageProps<Props>) {
               destinationUrl={`/routines/${routineId}/exercises/new`}
             />
           </div>
-          <div class="mt-4 max-h-[400px] overflow-y-auto">
+          <div class="mt-4 flex-grow h-[calc(100vh-320px)] overflow-y-auto">
             <BorderTable>
               {exercises?.map(({ exercise_id, name, muscle }) => (
                 <BorderTableItem key={exercise_id}>

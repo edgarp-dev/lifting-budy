@@ -7,8 +7,8 @@ type Props = {
 };
 const Navbar: FunctionalComponent<Props> = ({ title, children }) => {
   return (
-    <nav class="bg-slate-800 shadow-md py-4 px-6 flex justify-between items-center">
-      <h1 class="text-2xl font-bold text-white tracking-wide">{title}</h1>
+    <nav class="h-200 bg-slate-800 shadow-md py-4 px-6 flex justify-between items-center">
+      <h1 class="text-xl font-bold text-white tracking-wide">{title}</h1>
       {children}
     </nav>
   );

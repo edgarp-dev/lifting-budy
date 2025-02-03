@@ -7,7 +7,7 @@ interface AddButtonProps {
 const AddButton: FunctionComponent<AddButtonProps> = ({ to }) => {
 	return (
 		<button
-			class="text-white bg-gray-800 hover:bg-gray-500 font-bold py-2 px-4 rounded-sm mr-5 cursor-pointer"
+			class="text-white bg-gray-800 hover:bg-gray-500 font-bold rounded-sm mr-5 cursor-pointer"
 			onClick={() => {
 				location.href = to;
 			}}

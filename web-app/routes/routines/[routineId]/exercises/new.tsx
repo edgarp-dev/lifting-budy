@@ -11,7 +11,7 @@ interface Props {
   error?: string;
 }
 
-type NewExcersiceResponse = {
+type NewExersiceResponse = {
   exerciseId: number;
 };
 
@@ -38,7 +38,7 @@ export const handler: Handlers<Props> = {
 
       const baseUrl = Deno.env.get("BASE_URL");
       const newExercisePostUrl = `${baseUrl}/routines/${routineId}/exercises`;
-      const response = await post<NewExcersiceResponse>(
+      const response = await post<NewExersiceResponse>(
         newExercisePostUrl,
         req.headers,
         {
@@ -126,7 +126,7 @@ export default function RoutineExerciseCreate({ data }: PageProps<Props>) {
             )
             : (
               <SuccessMessage
-                message="New excersice saved successfully!"
+                message="New exercise saved successfully!"
                 destinationUrl={`/routines/${routineId}`}
               />
             )}
