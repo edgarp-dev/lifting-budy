@@ -31,6 +31,6 @@ jobs:
         with:
           project: "edgarp-dev-lifting-budy"
           entrypoint: "main.ts"
-          root: "./web-app"
+          root: "/web-app"
           
           
