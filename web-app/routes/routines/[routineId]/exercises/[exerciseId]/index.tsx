@@ -81,7 +81,7 @@ export default function ExeciseDetails(props: PageProps<Props>) {
         />
       </div>
       <div class="flex bg-gray-100">
-        <div class="container mx-auto p-4 max-w-3xl">
+        <div class="container mx-auto max-w-3xl">
           <div class="flex flex-col justify-between rounded border border-gray-300 p-8 mx-6">
             <div class="mb-4">
               <p class="text-xl font-bold text-gray-800">{name}</p>
