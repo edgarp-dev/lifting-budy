@@ -1,0 +1,12 @@
+services:
+  lb-web-app:
+    container_name: lb-web-app
+    image: ghcr.io/edgarp-dev/lb-web-app:latest
+    build: .
+    ports:
+      - "5000:8000"
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: ["deno", "run", "-A", "--watch=static/,routes/", "dev.ts"]
+    restart: always

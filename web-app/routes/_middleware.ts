@@ -1,6 +1,6 @@
 import { FreshContext } from "$fresh/server.ts";
 import { requireAuth } from "../auth/authMiddleware.ts";
-import { protectedRoutes } from "./routes.ts";
+import { protectedRoutes } from "../routesConfig/index.ts";
 
 export async function handler(req: Request, ctx: FreshContext) {
   const url = new URL(req.url);

@@ -8,7 +8,6 @@ import * as $_middleware from "./routes/_middleware.ts";
 import * as $index from "./routes/index.tsx";
 import * as $login_index from "./routes/login/index.tsx";
 import * as $profile_index from "./routes/profile/index.tsx";
-import * as $routes from "./routes/routes.ts";
 import * as $routines_routineId_exercises_exerciseId_index from "./routes/routines/[routineId]/exercises/[exerciseId]/index.tsx";
 import * as $routines_routineId_exercises_exerciseId_routine_exercises_new from "./routes/routines/[routineId]/exercises/[exerciseId]/routine-exercises/new.tsx";
 import * as $routines_routineId_exercises_new from "./routes/routines/[routineId]/exercises/new.tsx";
@@ -36,7 +35,6 @@ const manifest = {
     "./routes/index.tsx": $index,
     "./routes/login/index.tsx": $login_index,
     "./routes/profile/index.tsx": $profile_index,
-    "./routes/routes.ts": $routes,
     "./routes/routines/[routineId]/exercises/[exerciseId]/index.tsx":
       $routines_routineId_exercises_exerciseId_index,
     "./routes/routines/[routineId]/exercises/[exerciseId]/routine-exercises/new.tsx":
